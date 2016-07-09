@@ -3,12 +3,15 @@
 import sys,re,os
 from collections import Counter
 from shutil import copyfile
+import csv
 
 
 if __name__ == "__main__":
     param = sys.argv
     print param
     fileName = param[1]
+    fileType = "csv" if fileName.find(".csv") else "txt"
+    print "filetype is %s" % fileType
     f = open(fileName, 'r')
     li = []
     for line in f:
@@ -24,13 +27,31 @@ if __name__ == "__main__":
         f.close
         rename = "%s.back" % fileName
         copyfile(fileName, rename)
-        f2 = open(fileName, 'w')
-        f2.write("")
+        print "completed copy."
         list_uniq = []
         # 順序を保持したまま重複を削除
-        list_uniq = sorted(set(li), key=li.index)
+        # list_uniq = sorted(set(li), key=li.index)
+        def f7(seq):
+            seen = set()
+            seen_add = seen.add
+            return [ x for x in seq if x not in seen and not seen_add(x)]
+        list_uniq = f7(li)
+        print "overlap is deleted."
+        f2 = open("%s.txt" % fileName, 'a')
+        f2.write("")
         for i in list_uniq:
             f2.writelines(i)
+        # if fileType == "txt":
+        #     f2 = open(fileName, 'a')
+        #     f2.write("")
+        #     for i in list_uniq:
+        #         f2.writelines(i)
+        # if fileType == "csv":
+        #     os.remove(fileName)
+        #     f2 = open(fileName, 'a')
+        #     csvWriter = csv.writer(f2)
+        #     for i in list_uniq:
+        #         csvWriter.writerow(i.encode('sjis'))
         print "**** All completed ****"
         f2.close
     else:
